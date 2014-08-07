@@ -1,10 +1,11 @@
 package no.rystad.checksum;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class DirectoryChecksum {
     public String md5SumOfFileFromClassPath(String filename) throws IOException {
@@ -19,7 +20,15 @@ public class DirectoryChecksum {
         URL lfFileUrl = getClass().getClassLoader().getResource(filename);
 
         try (InputStream is = getInputStream(lfFileUrl, ignoreCr)) {
-            return DigestUtils.md5Hex(is);
+            MessageDigest digest = getMd5();
+            byte[] buffer = new byte[8192];
+            int len = 0;
+            while (-1 != (len = is.read(buffer))) {
+                digest.update(buffer,0,len);
+            }
+            byte[] md5hash = digest.digest();
+
+            return toHashString(md5hash);
         }
     }
 
@@ -31,5 +40,17 @@ public class DirectoryChecksum {
         }
 
         return inputStream;
+    }
+
+    private MessageDigest getMd5() {
+        try {
+            return MessageDigest.getInstance("md5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String toHashString(byte[] md5hash) {
+        return new BigInteger(1, md5hash).toString(16);
     }
 }
