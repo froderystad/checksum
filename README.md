@@ -1,4 +1,4 @@
-checksum
+Checksum
 ========
 
 Testing how to calculate the checksum of multiple files at once.

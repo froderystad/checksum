@@ -7,11 +7,15 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class DirectoryChecksum {
-    public String singleFile(String filename) throws IOException {
-        return singleFile(filename, false);
+    public String md5SumOfFileFromClassPath(String filename) throws IOException {
+        return md5SumOfFileFromClassPath(filename, false);
     }
 
-    public String singleFile(String filename, boolean ignoreCr) throws IOException {
+    public String md5SumOfFileFromClassPathIgnoreCr(String filename) throws IOException {
+        return md5SumOfFileFromClassPath(filename, true);
+    }
+
+    private String md5SumOfFileFromClassPath(String filename, boolean ignoreCr) throws IOException {
         URL lfFileUrl = getClass().getClassLoader().getResource(filename);
 
         try (InputStream is = getInputStream(lfFileUrl, ignoreCr)) {
